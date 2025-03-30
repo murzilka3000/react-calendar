@@ -30,12 +30,12 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = firstDayOfMonth(currentMonth, currentYear);
 
-    // Заполняем "пустоты" в начале месяца
+
     for (let i = 0; i < firstDay; i++) {
         days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
 
-    // Заполняем дни месяца
+
     for (let i = 1; i <= totalDays; i++) {
         const date = new Date(currentYear, currentMonth, i);
         const dateString = date.toISOString().slice(0, 10);
@@ -116,7 +116,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                                 <img src="/rb.svg" alt="" />
                             </button>
                         </div>
-                        <div onClick={goToToday}> {/*  Added onClick handler here */}
+                        <div onClick={goToToday}> 
                             <p>Сегодня</p>
                         </div>
                     </div>
