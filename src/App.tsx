@@ -8,12 +8,10 @@ const App: React.FC = () => {
     const userId = 749991690;
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjc0OTk5MTY5MCwiaWF0IjoxNzQzNDQwNTY4LCJleHAiOjE3NzQ5NzY1Njh9.wtf6a9w2q0UqQUmDXuxiehN_B4RXD93TkdUlFwC6skY";
 
-    const baseUrl = window.location.origin;  
-    const currentPath = window.location.pathname; 
-    const imagePath = "static"; 
+    const staticBaseUrl = "https://evabot1.ru/static/reminders";
 
     const getStaticAssetUrl = (filename: string) => {
-        return `${baseUrl}/${imagePath}${currentPath}/${filename}`;
+        return `${staticBaseUrl}/${filename}`;
     };
 
     useEffect(() => {
@@ -75,7 +73,7 @@ const App: React.FC = () => {
         <div className="App">
             <Calendar
                 events={events}
-                getStaticAssetUrl={getStaticAssetUrl} 
+                getStaticAssetUrl={getStaticAssetUrl}
             />
         </div>
     );
