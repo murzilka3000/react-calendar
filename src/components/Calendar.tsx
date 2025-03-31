@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { CalendarDay } from './CalendarDay';
 import { EventList } from './EventList';
-
-interface Event {
-    id: number;
-    title: string;
-    time: string;
-}
+import { Event } from '../types/event';
 
 interface CalendarProps {
     events: Record<string, Event[]>;
@@ -30,11 +25,9 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = firstDayOfMonth(currentMonth, currentYear);
 
-
     for (let i = 0; i < firstDay; i++) {
         days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
-
 
     for (let i = 1; i <= totalDays; i++) {
         const date = new Date(currentYear, currentMonth, i);
@@ -46,7 +39,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 day={i}
                 date={date}
                 eventsForDay={events[dateString] || []}
-                onSelect={() => setSelectedDate(date)}
+                onSelect={setSelectedDate}
                 isSelected={
                     selectedDate?.getDate() === i &&
                     selectedDate?.getMonth() === currentMonth &&
@@ -75,7 +68,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const goToPreviousMonth = () => {
         setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
         setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
-        setSelectedDate(null); 
+        setSelectedDate(null);
     };
 
     const goToNextMonth = () => {
@@ -116,7 +109,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                                 <img src="/rb.svg" alt="" />
                             </button>
                         </div>
-                        <div onClick={goToToday}> 
+                        <div onClick={goToToday}>
                             <p>Сегодня</p>
                         </div>
                     </div>
