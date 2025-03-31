@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
 import './App.css';
-import { Event } from './types/event'; 
+import { Event } from './types/event';
 
 const App: React.FC = () => {
     const [events, setEvents] = useState<Record<string, Event[]>>({});
     const userId = 749991690;
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjc0OTk5MTY5MCwiaWF0IjoxNzQzNDQwNTY4LCJleHAiOjE3NzQ5NzY1Njh9.wtf6a9w2q0UqQUmDXuxiehN_B4RXD93TkdUlFwC6skY";
+
+    const baseUrl = window.location.origin;  
+    const currentPath = window.location.pathname; 
+    const imagePath = "static"; 
+
+    const getStaticAssetUrl = (filename: string) => {
+        return `${baseUrl}/${imagePath}${currentPath}/${filename}`;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,7 +25,7 @@ const App: React.FC = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ t_user_id: userId }), 
+                    body: JSON.stringify({ t_user_id: userId }),
                 });
 
                 if (!response.ok) {
@@ -65,7 +73,10 @@ const App: React.FC = () => {
 
     return (
         <div className="App">
-            <Calendar events={events} />
+            <Calendar
+                events={events}
+                getStaticAssetUrl={getStaticAssetUrl} 
+            />
         </div>
     );
 };

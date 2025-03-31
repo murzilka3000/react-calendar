@@ -5,9 +5,10 @@ import { Event } from '../types/event';
 
 interface CalendarProps {
     events: Record<string, Event[]>;
+    getStaticAssetUrl: (filename: string) => string;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -98,15 +99,15 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 </h2>
                 <div className='flex-center block2'>
                     <div>
-                        <img src="/avatar.svg" alt="" />
+                        <img src={getStaticAssetUrl('avatar.svg')} alt="Avatar" />
                     </div>
                     <div className='flex-center header-block'>
                         <div className='flex-center'>
                             <button onClick={goToPreviousMonth}>
-                                <img src="/lb.svg" alt="" />
+                                <img src='/lb.svg' alt="Previous" />
                             </button>
                             <button onClick={goToNextMonth}>
-                                <img src="/rb.svg" alt="" />
+                                <img src='/rb.svg' alt="Next" />
                             </button>
                         </div>
                         <div onClick={goToToday}>
@@ -114,6 +115,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div className="calendar-grid">
@@ -127,7 +129,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 {days}
             </div>
             <button className="collapse-button" onClick={toggleCollapse}>
-                {isCollapsed ? <img src="/top.svg" alt="Свернуть" /> : <img src="/bottom.svg" alt="Развернуть" />}
+                {isCollapsed ? <img src='/top.svg' alt="Свернуть" /> : <img src='/bottom.svg' alt="Развернуть" />}
             </button>
 
             {selectedDate && (
