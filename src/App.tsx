@@ -8,10 +8,21 @@ const App: React.FC = () => {
     const userId = 749991690;
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjc0OTk5MTY5MCwiaWF0IjoxNzQzNDQwNTY4LCJleHAiOjE3NzQ5NzY1Njh9.wtf6a9w2q0UqQUmDXuxiehN_B4RXD93TkdUlFwC6skY";
 
-    const staticBaseUrl = "https://evabot1.ru/static/reminders";
+    const getProjectNameFromUrl = (): string | null => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectName = urlParams.get('project_name');
+        return projectName;
+    };
+
+    const projectName = getProjectNameFromUrl();
 
     const getStaticAssetUrl = (filename: string) => {
-        return `${staticBaseUrl}/${filename}`;
+         if (!projectName) {
+            console.error("Project name not found in URL.");
+            return "/avatar.svg"; 
+         }
+
+        return `https://static-sda.ru/static/${projectName}/${filename}`;
     };
 
     useEffect(() => {
