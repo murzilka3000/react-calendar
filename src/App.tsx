@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from './components/Calendar';
 import './App.css';
-import { Event } from './types/event'; // Правильный путь импорта
+import { Event } from './types/event'; 
 
 const App: React.FC = () => {
     const [events, setEvents] = useState<Record<string, Event[]>>({});
@@ -15,9 +15,9 @@ const App: React.FC = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // Добавили заголовок Authorization
+                        'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ t_user_id: userId }), // Тело запроса нужно
+                    body: JSON.stringify({ t_user_id: userId }), 
                 });
 
                 if (!response.ok) {
