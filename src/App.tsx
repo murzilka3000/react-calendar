@@ -18,7 +18,6 @@ const App: React.FC = () => {
 
     const getStaticAssetUrl = (filename: string) => {
          if (!projectName) {
-            console.error("Project name not found in URL.");
             return "/avatar.svg"; 
          }
 
@@ -49,10 +48,13 @@ const App: React.FC = () => {
                     for (const key in data.reminders) {
                         const reminder = data.reminders[key];
                         const reminderDateTime = new Date(reminder.reminder_on_datetime);
+
                         const reminderDate = reminderDateTime.toISOString().slice(0, 10);
+
                         const reminderTime = reminderDateTime.toLocaleTimeString('ru-RU', {
                             hour: '2-digit',
                             minute: '2-digit',
+                            timeZone: 'UTC', 
                         });
 
                         const event: Event = {
