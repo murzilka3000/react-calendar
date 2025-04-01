@@ -3,15 +3,9 @@ import Calendar from './components/Calendar';
 import './App.css';
 import { Event } from './types/event';
 
-const AVATAR_FILENAME = 'avatar.svg';
-
 const origin = window.location.origin;
-let basePath = window.location.pathname;
-if (!basePath.endsWith('/')) {
-    basePath += '/';
-}
 const apiUrl = `${origin}/reminders`;
-const staticBaseUrl = `${origin}${basePath}`;
+const STATIC_ASSET_BASE_URL = 'https://static-sda.ru/';
 
 const App: React.FC = () => {
     const [events, setEvents] = useState<Record<string, Event[]>>({});
@@ -21,6 +15,7 @@ const App: React.FC = () => {
     const [userId, setUserId] = useState<number | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [projectName, setProjectName] = useState<string | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,30 +24,38 @@ const App: React.FC = () => {
         const projectNameParam = urlParams.get('project_name');
 
         let parseError = null;
+        let currentProjectName: string | null = null;
 
         if (userIdParam) {
-            const parsedUserId = parseInt(userIdParam, 10);
-            if (!isNaN(parsedUserId)) {
-                setUserId(parsedUserId);
-            } else {
-                parseError = "Некорректный User ID в параметре URL 't_user_id'.";
-            }
+             const parsedUserId = parseInt(userIdParam, 10);
+             if (!isNaN(parsedUserId)) {
+                 setUserId(parsedUserId);
+             } else {
+                 parseError = "Некорректный User ID в параметре URL 't_user_id'.";
+             }
         } else {
-            parseError = "Отсутствует User ID в параметре URL 't_user_id'.";
+             parseError = "Отсутствует User ID в параметре URL 't_user_id'.";
         }
 
         if (tokenParam) {
-            setToken(tokenParam);
+             setToken(tokenParam);
         } else {
-            if (!parseError) {
-                parseError = "Отсутствует Token в параметре URL 'token'.";
-            }
+             if (!parseError) {
+                 parseError = "Отсутствует Token в параметре URL 'token'.";
+             }
         }
 
         if (projectNameParam) {
-            setProjectName(projectNameParam);
+            currentProjectName = projectNameParam;
+            setProjectName(currentProjectName);
         } else {
             setProjectName(null);
+        }
+
+        if (currentProjectName === 'Eva_Bot') {
+            setAvatarUrl('https://static-sda.ru/evabot/avatar.png');
+        } else {
+            setAvatarUrl(null);
         }
 
         if (parseError) {
@@ -62,32 +65,28 @@ const App: React.FC = () => {
 
     }, []);
 
+    useEffect(() => {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+        }
+    }, []);
+
     const getStaticAssetUrl = (filename: string): string => {
         const cleanFilename = filename.startsWith('/') ? filename.substring(1) : filename;
 
-        if (cleanFilename === AVATAR_FILENAME) {
-            if (projectName) {
-                const projectFolder = projectName.toLowerCase();
-                const projectAvatarUrl = `${staticBaseUrl}${projectFolder}/${cleanFilename}`;
-                return projectAvatarUrl;
-            } else {
-                const defaultAvatarUrl = `${staticBaseUrl}${cleanFilename}`;
-                return defaultAvatarUrl;
-            }
+        if (projectName) {
+            const projectFolder = projectName.toLowerCase();
+            return `${STATIC_ASSET_BASE_URL}${projectFolder}/${cleanFilename}`;
         } else {
-            const standardUrl = `${staticBaseUrl}${cleanFilename}`;
-            return standardUrl;
+            return `${STATIC_ASSET_BASE_URL}${cleanFilename}`;
         }
     };
 
     useEffect(() => {
-        if (!userId || !token || error) {
-            return;
-        }
-
+        if (!userId || !token || error) { return; }
         const fetchData = async () => {
             setIsLoading(true);
-
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -96,7 +95,7 @@ const App: React.FC = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify({ t_user_id: userId }),
-                });
+                 });
 
                 if (!response.ok) {
                     let errorBody = null;
@@ -110,18 +109,14 @@ const App: React.FC = () => {
                     const formattedEvents: Record<string, Event[]> = {};
                     for (const key in data.reminders) {
                         const reminder = data.reminders[key];
-                        if (!reminder.reminder_on_datetime) {
-                            continue;
-                        }
+                        if (!reminder.reminder_on_datetime) { continue; }
                         let reminderDateTime;
                         try {
                             reminderDateTime = new Date(reminder.reminder_on_datetime);
                             if (isNaN(reminderDateTime.getTime())) {
                                 throw new Error(`Invalid date format: ${reminder.reminder_on_datetime}`);
                             }
-                        } catch {
-                            continue;
-                        }
+                        } catch { continue; }
                         const reminderDate = reminderDateTime.toISOString().slice(0, 10);
                         const reminderTime = reminderDateTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
                         const event: Event = { id: key, title: reminder.reminder_text || 'Без названия', date: reminderDate, time: reminderTime };
@@ -135,33 +130,25 @@ const App: React.FC = () => {
                     setError(errorMessage);
                     setEvents({});
                 }
-
             } catch (fetchError) {
-                setError(`Ошибка при получении данных: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`);
-                setEvents({});
+                 setError(`Ошибка при получении данных: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`);
+                 setEvents({});
             } finally {
-                setIsLoading(false);
+                 setIsLoading(false);
             }
         };
-
         fetchData();
-
     }, [userId, token, error]);
 
-    if (error) {
-        return <div className="App App-error">Ошибка: {error}</div>;
-    }
-    if (!userId || !token) {
-        return <div className="App App-waiting">Ожидание параметров из URL...</div>;
-    }
-    if (isLoading) {
-        return <div className="App App-loading">Загрузка календаря...</div>;
-    }
+    if (error) { return <div className="App App-error">Ошибка: {error}</div>; }
+    if (!userId || !token) { return <div className="App App-waiting">Ожидание параметров из URL...</div>; }
+    if (isLoading) { return <div className="App App-loading">Загрузка календаря...</div>; }
     return (
         <div className="App">
             <Calendar
                 events={events}
                 getStaticAssetUrl={getStaticAssetUrl}
+                avatarUrl={avatarUrl}
             />
         </div>
     );
