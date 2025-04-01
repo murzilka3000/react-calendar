@@ -52,8 +52,8 @@ const App: React.FC = () => {
             setProjectName(null);
         }
 
-        if (currentProjectName === 'Eva_Bot') {
-            setAvatarUrl('https://static-sda.ru/evabot/avatar.png');
+        if (currentProjectName === projectName) {
+            setAvatarUrl(`https://static-sda.ru/${projectName}/avatar.svg`);
         } else {
             setAvatarUrl(null);
         }
