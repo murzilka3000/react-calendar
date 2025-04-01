@@ -5,8 +5,8 @@ import { Event } from '../types/event';
 
 interface CalendarProps {
     events: Record<string, Event[]>;
-    getStaticAssetUrl: (filename: string) => string; // Функция для относительных путей
-    avatarUrl: string | null; // Прямой URL аватара (или null)
+    getStaticAssetUrl: (filename: string) => string;
+    avatarUrl: string | null;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUrl }) => {
@@ -20,18 +20,15 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
     };
 
     const firstDayOfMonth = (month: number, year: number): number => {
-        // Корректируем для недели, начинающейся с понедельника (0 = Пн, 6 = Вс)
         const day = new Date(year, month, 1).getDay();
-        return day === 0 ? 6 : day - 1; // Воскресенье (0) становится 6, остальные сдвигаются
+        return day === 0 ? 6 : day - 1; 
     };
 
 
     const days = [];
     const totalDays = daysInMonth(currentMonth, currentYear);
-    // Получаем день недели первого числа (0=Пн, 1=Вт, ..., 6=Вс)
     const firstDayIndex = firstDayOfMonth(currentMonth, currentYear);
 
-    // Добавляем пустые ячейки для дней перед первым числом месяца
     for (let i = 0; i < firstDayIndex; i++) {
         days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
@@ -83,11 +80,10 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
         const today = new Date();
         setCurrentMonth(today.getMonth());
         setCurrentYear(today.getFullYear());
-        // Выделяем сегодняшний день, если он в текущем месяце/году
         if (today.getMonth() === currentMonth && today.getFullYear() === currentYear) {
              setSelectedDate(today);
         } else {
-             setSelectedDate(null); // Сбрасываем выделение, если перешли на другой месяц/год
+             setSelectedDate(null); 
         }
     };
 
@@ -104,7 +100,6 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
                     {monthNames[currentMonth]} <span>{currentYear}</span>
                 </h2>
                 <div className='flex-center block2'>
-                    {/* Условное отображение аватара */}
                     {avatarUrl && (
                          <div>
                             <img src={avatarUrl} alt="Avatar" />
@@ -112,7 +107,6 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
                     )}
                     <div className='flex-center header-block'>
                         <div className='flex-center'>
-                             {/* Используем getStaticAssetUrl для иконок кнопок */}
                             <button onClick={goToPreviousMonth}>
                                 <img src={getStaticAssetUrl('lb.svg')} alt="Previous" />
                             </button>
@@ -128,7 +122,6 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
             </div>
 
             <div className="calendar-grid">
-                {/* Заголовки дней недели */}
                 <div className="weekday">Пн</div>
                 <div className="weekday">Вт</div>
                 <div className="weekday">Ср</div>
@@ -136,19 +129,16 @@ const Calendar: React.FC<CalendarProps> = ({ events, getStaticAssetUrl, avatarUr
                 <div className="weekday">Пт</div>
                 <div className="weekday">Сб</div>
                 <div className="weekday">Вс</div>
-                {/* Ячейки календаря */}
                 {days}
             </div>
 
             <button className="collapse-button" onClick={toggleCollapse}>
-                 {/* Используем getStaticAssetUrl для иконок кнопок */}
                 {isCollapsed
                     ? <img src={getStaticAssetUrl('top.svg')} alt="Развернуть" />
                     : <img src={getStaticAssetUrl('bottom.svg')} alt="Свернуть" />
                 }
             </button>
 
-            {/* Отображение списка событий для выбранной даты */}
             {selectedDate && selectedDateString && (
                 <EventList events={events[selectedDateString] || []} date={selectedDate} />
             )}
